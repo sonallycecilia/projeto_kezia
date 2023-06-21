@@ -33,14 +33,60 @@ class DataBase:
         
     def cadastrar_usuario(self):
         self.nome_cadastro = self.entrada_nome_cadastro.get()
+        self.username_cadastro = self.entrada_username_cadastro.get()
+        self.numero_cadastro = self.entrada_numero_cadastro.get()
+        self.senha_cadastro = self.entrada_senha_cadastro.get()
+        self.confirmar_senha_cadastro = self.entrada_confirmar_senha_cadastro.get()
         
+        self.conectar_db()
+        
+        self.cursor.execute("""
+            INSERT INTO Usuarios (Nome, Username, Numero, Senha, Confirmar_senha)
+            VALUES (?, ?, ?, ?, ?)""", (self.nome_cadastro, self.username_cadastro,
+                                         self.numero_cadastro, self.senha_cadastro,
+                                         self.confirmar_senha_cadastro)
+        )
+            
+        self.conn.commit()
+        print('Dados cadastrados com sucesso!')
+        self.desconectar_db()
+    
+        try:
+            if (self.nome_cadastro == '' or self.username_cadastro == '' 
+            or self.numero_cadastro == '' or self.senha_cadastro == '' 
+            or self.confirmar_senha_cadastro == ''):
+                self.msg_erro('Preencha todos os campos!')
+                
+            elif (len(self.username_cadastro)) < 4:
+                self.msg_erro('O Username deve conter mais de 4')
+            else:
+                self.conn.commit()
+                
+        except:
+            self.msg_erro('Erro no processamento do cadastro! \nTente novamente.')
+            
+    
+    def msg_erro(self, text):
+        CTkMessagebox(title= 'Erro!', 
+                      message= text, 
+                      icon= 'cancel', 
+                      button_color='#A567BB',
+                      button_hover_color='#bc91e6',
+                      font=('Berlin Sans FB', 16))
+                
+                
+                
+        
+                
 class JanelaLogin(ctk.CTk, DataBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.aparencia_programa()
         self.frame_principal_login()
+        self.criar_tabela()
         self.mostrar_senha_login()
         self.toplevel_window = None
+ 
         
         
     @staticmethod
@@ -199,7 +245,7 @@ class JanelaLogin(ctk.CTk, DataBase):
             
     def frame_principal_cadastro(self):
         # limpar tela de login
-        self.frame_login.pack_forget()
+        self.frame_login.place_forget()
         
         # frame dos widgets
         self.frame_cadastro = ctk.CTkFrame(self, width=350, height=380)
@@ -226,7 +272,7 @@ class JanelaLogin(ctk.CTk, DataBase):
         
         # botão voltar
         self.button_voltar_login = ctk.CTkImage(
-            Image.open('btn_voltar.png'), size=(26, 26)
+            PIL.Image.open('btn_voltar.png'), size=(26, 26)
         )
         self.button_voltar_login = ctk.CTkButton(
             self.frame_cadastro,
@@ -242,12 +288,12 @@ class JanelaLogin(ctk.CTk, DataBase):
         self.button_voltar_login.grid(row=0, column=0, padx=5, pady=5, sticky='w')
         
         # titulo do cadastro
-        self.cadastro1_title = ctk.CTkLabel(
+        self.cadastro_title = ctk.CTkLabel(
             self.frame_cadastro,
             text='insira seus dados:',
             font=('Berlin Sans FB', 24)
         )
-        self.cadastro1_title.grid(row=1, column=0, pady=10)
+        self.cadastro_title.grid(row=1, column=0, pady=10)
         
         # widgets da tela de cadastro
         self.entrada_nome_cadastro = ctk.CTkEntry(
@@ -306,7 +352,7 @@ class JanelaLogin(ctk.CTk, DataBase):
             corner_radius=30,
             command=self.mostrar_senha_cadastro
         )
-        self.ver_senha_cadastro.grid(row=7, column=0, pady=5, padx=10)
+        self.ver_senha_cadastro.grid(row=7, column=0, pady=10, padx=10)
         
         # botão da proxima estapa
         self.button_cadastro2 = ctk.CTkButton(
@@ -314,16 +360,16 @@ class JanelaLogin(ctk.CTk, DataBase):
             width=300,
             fg_color='#A567BB',
             hover_color='#bc91e6',
-            text='PRÓXIMO',
+            text='FINALIZAR CADASTRO',
             font=('Berlin Sans FB', 16),
             corner_radius=15,
-            command=self.cadastro_finalizado
+            command=self.cadastrar_usuario()
         )
-        self.button_cadastro2.grid(row=8, column=0, pady=40, padx=10)
+        self.button_cadastro2.grid(row=8, column=0, pady=30, padx=10)
     
     def cadastro_finalizado(self):
-        self.frame_cadastro.pack_forget()
-        self.frame_cadastro_txt.pack_forget()
+        self.frame_cadastro.place_forget()
+        self.frame_cadastro_txt.place_forget()
  
         
         self.frame_cadastro_finalizado = ctk.CTkFrame(self, width=350, height=380)
@@ -337,7 +383,7 @@ class JanelaLogin(ctk.CTk, DataBase):
         self.cadastro_concluido.grid(row=1, column=0, pady=60)
         
         self.img_hands = ctk.CTkImage(
-            Image.open('img_welcome.png'), size=(115, 100)
+            PIL.Image.open('img_welcome.png'), size=(115, 100)
         )
         self.welcome_img = ctk.CTkLabel(
             self.frame_cadastro_finalizado,
@@ -356,16 +402,16 @@ class JanelaLogin(ctk.CTk, DataBase):
         )
         self.ir_ao_login.grid(row=3, column=0, pady=60, padx=20)
 
-    def limpar_login(self):
+    def limpar_entrada_login(self):
         self.entrada_login_username.delete(0, END)
         self.entrada_senha_login.delete(0, END)
     
-    def limpar_cadastro(self):
+    def limpar_entrada_cadastro(self):
         self.entrada_nome_cadastro.delete(0, END)
         self.entrada_username_cadastro.delete(0, END) 
         self.entrada_numero_cadastro.delete(0, END)
         self.entrada_senha_cadastro.delete(0, END)
-        self.entrada_confirmar_senha_cadastro(0, END)
+        self.entrada_confirmar_senha_cadastro.delete(0, END)
     
     
 janela = JanelaLogin()
