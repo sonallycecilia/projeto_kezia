@@ -21,7 +21,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         )   
         self.label_ola.grid(row=0, column=0, pady=15, padx=15)
         
-        #tab geral
+        #tab geral do usuario
         self.frame_usuario = ctk.CTkTabview(
             self,
             width=250, 
