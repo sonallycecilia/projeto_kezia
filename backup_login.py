@@ -84,8 +84,6 @@ class JanelaLogin(ctk.CTk, DataBase):
         self.criar_tabela()
         self.mostrar_senha_login()
         self.toplevel_window = None
- 
-        
         
     @staticmethod
     def aparencia_temas(setar_dark_light_mode):
@@ -361,7 +359,7 @@ class JanelaLogin(ctk.CTk, DataBase):
             text='FINALIZAR CADASTRO',
             font=('Berlin Sans FB', 16),
             corner_radius=15,
-            command=self.cadastrar_usuario()
+            command=self.cadastrar_usuario
         )
         self.button_cadastro2.grid(row=8, column=0, pady=30, padx=10)
     
