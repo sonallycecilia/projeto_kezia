@@ -7,6 +7,7 @@ import random
 from PIL import Image
 from io import BytesIO
 
+
 class JanelaUsuario(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -14,12 +15,11 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.geometry("1450x800")
         self.opcoes_usuario()
         self.filme_principal()
+        self.pegar_imagem(self.poster)
+        self.pegar_poster()
         
         #variaveis
         self.id_genero = None
-        self.titulo_principal = None
-        self.print_titulo_principal = None
-        self.titulo_principal = None
 
     #verificação dos estados do botão e atribuição de valor a variavel self.id_genero
     def verificar_botao_acao(self):
@@ -855,14 +855,20 @@ class JanelaUsuario(ctk.CTkToplevel):
     def pegar_imagem(self, url_imagem):
         self.url = "https://image.tmdb.org/t/p/w500" + url_imagem
 
-        self.response = self.requests.get(self.url)
+        self.response = requests.get(self.url)
 
         if self.response.status_code == 200:
             self.imagem = Image.open(BytesIO(self.response.content))
             self.res = self.imagem.show()
+            return self.res
         else:
             self.res = "Falha ao obter a imagem"
-        return self.res
+            return None
+    
+    def pegar_poster(self, lista, indice, transform_movie):
+        self.movie = lista[indice]
+        self.poster = transform_movie["results"][self.movie]["poster_path"]
+        return self.poster
     
     def pegar_diretor(self, id_filme):
         self.url = "https://api.themoviedb.org/3/movie/"+ str(id_filme) +"/credits?language=pt-BR"
@@ -875,7 +881,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.response = requests.get(self.url, headers=self.headers)
 
         return self.response.text
-    
+
     def main_api(self):
         self.token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
         self.url = "https://api.themoviedb.org/3/discover/movie"
@@ -900,7 +906,7 @@ class JanelaUsuario(ctk.CTkToplevel):
             print(self.lista_indice_filmes)        
         else:
             CTkMessagebox(title= 'Inválido!',
-                message= 'Marque uma opção de', 
+                message= 'Marque uma opção de gênero!', 
                 icon= 'warning',
                 button_color='#A567BB',
                 button_hover_color='#bc91e6',
@@ -914,17 +920,68 @@ class JanelaUsuario(ctk.CTkToplevel):
         
         #info filme principal
         self.titulo_principal = self.transform_movie['results'][self.pos_filme_principal]["title"]
-        self.data_lançamento_principal = self.transform_movie["results"][self.pos_filme_principal]["release_date"]
-        '''self.tmdb_vote_principal = self.transform_movie["results"][self.pos_filme_principal]["vote_average"]
+        self.lançamento_principal = self.transform_movie["results"][self.pos_filme_principal]["release_date"]
+        self.tmdb_nota_principal = self.transform_movie["results"][self.pos_filme_principal]["vote_average"]
         self.filme_id_principal = self.transform_movie['results'][self.pos_filme_principal]["id"]
-        self.obter_diretor = self.pegar_director(str(self.filme_id))
-        self.transform_director = json.loads(self.obter_diretor)
         self.poster = self.transform_movie["results"][self.pos_filme_principal]["poster_path"]
-        self.obter_trailer = self.get_trailer(str(self.filme_id))
+        '''self.obter_trailer = self.get_trailer(str(self.filme_id))
         self.transformar_trailer = json.loads(self.obter_trailer)
-        self.trailers = self.transformar_trailer['results']'''
-        print(self.titulo_principal)
-    
+        self.trailers = self.transformar_trailer['results']
+        self.obter_diretor = self.pegar_director(str(self.filme_id))
+        self.transform_director = json.loads(self.obter_diretor)'''
+        
+        #conversões do filme principal
+        self.titulo_principal_convertido = self.titulo_principal
+        self.lançamento_principal_convertido = self.lançamento_principal
+        self.tmdb_nota_principal_convertido = self.tmdb_nota_principal
+        
+        #frame de filmes
+        self.frame_filmes = ctk.CTkTabview(
+            self,
+            width=800, 
+            height=750,
+            segmented_button_selected_color='#A567BB',
+            segmented_button_fg_color='#A567BB',
+            segmented_button_selected_hover_color='#A567BB',
+            segmented_button_unselected_hover_color='#A567BB',
+            segmented_button_unselected_color='#bc91e6'
+        )
+        self.frame_filmes.place(x=350, y=80)
+        self.frame_filmes.add('INDICAÇÃO PRINCIPAL')
+        self.frame_filmes.add('OPÇÃO 1')
+        self.frame_filmes.add('OPÇÃO 2')
+        self.frame_filmes.add('OPÇÃO 3')
+
+        #informação frame principal
+        self.mostrar_titulo_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Título: {self.titulo_principal_convertido}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_titulo_principal.grid(row=0, column=0, padx=10, pady=10)
+        
+        self.mostrar_lançamento_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Data de Lançamento: {self.lançamento_principal_convertido}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_lançamento_principal.grid(row=1, column=0, padx=10, pady=10)
+        
+        self.mostrar_tmdb_nota_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Nota IMDB: {self.tmdb_nota_principal_convertido}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_tmdb_nota_principal.grid(row=2, column=0, padx=10, pady=10)
+
+        '''self.mostra_essa_bosta = self.pegar_imagem(self.poster)
+        self.poster_filme_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'), 
+            text='', 
+            image=self.mostra_essa_bosta
+        )
+        self.poster_filme_principal.grid(row=3, column=0, padx=10, pady=10)'''
+        
     def opcoes_usuario(self):
         #frame olá
         self.frame_nome = ctk.CTkFrame(self, width=50, height=50)
@@ -1191,19 +1248,4 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.label_dados.grid(row=0, column=0, pady=15)
           
     def filme_principal(self):
-        self.frame_filme_principal = ctk.CTkFrame(self, width=300, height=200)
-        self.frame_filme_principal.place(x=350, y=85)
-
-        
-        self.print_titulo_principal = ctk.CTkLabel(
-            self.frame_filme_principal,
-            text='',
-            font=('Berlin Sans FB', 20)
-        )
-        self.print_titulo_principal.configure(text=str(self.titulo_filme_principal))
-        self.print_titulo_principal.grid(row=0, column=0, padx=10, pady=10)
-        
-        
-        
-        
-    
+        pass
