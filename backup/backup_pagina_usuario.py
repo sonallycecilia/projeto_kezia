@@ -14,9 +14,6 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.title('Página do Usuário')
         self.geometry("1450x800")
         self.opcoes_usuario()
-        self.filme_principal()
-        self.pegar_imagem(self.poster)
-        self.pegar_poster()
         
         #variaveis
         self.id_genero = None
