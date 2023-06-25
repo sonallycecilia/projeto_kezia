@@ -3,17 +3,23 @@ from tkinter import *
 from CTkMessagebox import CTkMessagebox
 from tmdb_api import *
 import webbrowser
+from database.database import DataBase
 
-class JanelaUsuario(ctk.CTkToplevel):
+class JanelaUsuario(ctk.CTkToplevel, DataBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title('Página do Usuário')  
         self.geometry("1450x800")
         self.opcoes_usuario()
-        self.tab_filmes()
         
         #variaveis
         self.id_genero = None
+        '''self.conectar_db()
+        usuario = self.username_login.get()
+        self.username_usuario = usuario
+        print(self.username_usuario)
+        self.desconectar_db()'''
+        
 
     #verificação dos estados do botão e atribuição de valor a variavel self.id_genero
     def verificar_botao_acao(self):
@@ -820,7 +826,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.frame_nome.place(x=20, y=20)
         self.label_ola = ctk.CTkLabel(
             self.frame_nome,
-            text='  Olá, nome!  ',
+            text=f'Olá, seja bem vindo(a)!',
             font=('Berlin Sans FB', 28)
         )   
         self.label_ola.grid(row=0, column=0, pady=15, padx=15)
@@ -1101,6 +1107,8 @@ class JanelaUsuario(ctk.CTkToplevel):
             self.trailer_principal = trailer_principal
             sinopse_principal = get_overview(filmes_sorteados, 0, filmes)
             self.sinopse_principal = sinopse_principal
+            stream_principal = get_streaming(id_filme_principal)
+            self.stream_principal = stream_principal
             
             #informações da op1
             id_filme_op1= get_movie_id(filmes_sorteados, 1, filmes)
@@ -1228,7 +1236,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.mostrar_sinopse_principal = ctk.CTkTextbox(
             self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
             width=410,
-            height=200,
+            height=310,
             font=('Berlin Sans FB', 20)
         )
         self.mostrar_sinopse_principal.place(x=5, y=220)
@@ -1245,6 +1253,20 @@ class JanelaUsuario(ctk.CTkToplevel):
             command=lambda: webbrowser.open(f'{self.trailer_principal}')
         )
         self.botao_trailer_principal.place(x=500, y=545)
+        
+        self.titulo_stream_princial = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text='Plataforma de Stream:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_stream_princial.place(x=5, y=545)
+        
+        self.mostrar_stream_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'{self.stream_principal}',
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_stream_principal.place(x=5, y=565)
         
         #informações op1
         self.mostrar_titulo_op1 = ctk.CTkLabel(
@@ -1295,7 +1317,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.mostrar_sinopse_op1 = ctk.CTkTextbox(
             self.frame_filmes.tab('OPÇÃO 1'),
             width=410,
-            height=200,
+            height=310,
             font=('Berlin Sans FB', 20)
         )
         self.mostrar_sinopse_op1.place(x=5, y=220)
@@ -1362,7 +1384,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.mostrar_sinopse_op2 = ctk.CTkTextbox(
             self.frame_filmes.tab('OPÇÃO 2'),
             width=410,
-            height=200,
+            height=310,
             font=('Berlin Sans FB', 20)
         )
         self.mostrar_sinopse_op2.place(x=5, y=220)
@@ -1379,7 +1401,6 @@ class JanelaUsuario(ctk.CTkToplevel):
             command=lambda: webbrowser.open(f'{self.trailer_op2}')
         )
         self.botao_trailer_op2.place(x=500, y=545)
-        
         
         #informações op3
         self.mostrar_titulo_op3 = ctk.CTkLabel(
@@ -1430,7 +1451,7 @@ class JanelaUsuario(ctk.CTkToplevel):
         self.mostrar_sinopse_op3 = ctk.CTkTextbox(
             self.frame_filmes.tab('OPÇÃO 3'),
             width=410,
-            height=200,
+            height=310,
             font=('Berlin Sans FB', 20)
         )
         self.mostrar_sinopse_op3.place(x=5, y=220)
@@ -1448,9 +1469,6 @@ class JanelaUsuario(ctk.CTkToplevel):
         )
         self.botao_trailer_op3.place(x=500, y=545)
         
-    def tab_filmes(self):
+    def ultimos_vistos(self):
         pass
-        
 
-        
-        

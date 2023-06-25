@@ -1,20 +1,16 @@
 import customtkinter as ctk
 from tkinter import *
 from CTkMessagebox import CTkMessagebox
-import requests
-import json
-import random
-from PIL import Image
-from io import BytesIO
+from tmdb_api import *
+import webbrowser
+from database.database import DataBase
 
-
-class JanelaUsuario(ctk.CTkToplevel):
+class JanelaUsuario(ctk.CTkToplevel, DataBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title('Página do Usuário')
+        self.title('Página do Usuário')  
         self.geometry("1450x800")
         self.opcoes_usuario()
-        
         #variaveis
         self.id_genero = None
 
@@ -817,175 +813,13 @@ class JanelaUsuario(ctk.CTkToplevel):
             self.botao_scifi.configure(state=NORMAL)
             self.botao_terror.configure(state=NORMAL)
     
-    #backend api
-    def pegar_filme_genero(self, id_genero, auth_token):
-        self.url = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=43"
-        self.token = "Bearer "+ auth_token
-        self.params = {
-        "with_genres":str(id_genero),
-        "include_adult": "false",
-        "include_video": "true",
-        "language": "pt-BR",
-        "page": self.page,
-        "sort_by": "popularity.desc"
-        }
-        self.headers = {
-            "accept": "application/json",
-            "Authorization": self.token
-        }
-
-        self.response = requests.get(self.url, headers=self.headers, params=self.params)
-
-        return self.response.text
-    
-    def pegar_trailer(self, id_filme):
-        self.url = "https://api.themoviedb.org/3/movie/"+ str(id_filme) +"/videos?language=pt-BR"
-        self.headers = {
-            "accept": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
-         }
-
-        self.response = self.requests.get(self.url, headers=self.headers)
-
-        return self.response.text
-
-    def pegar_imagem(self, url_imagem):
-        self.url = "https://image.tmdb.org/t/p/w500" + url_imagem
-
-        self.response = requests.get(self.url)
-
-        if self.response.status_code == 200:
-            self.imagem = Image.open(BytesIO(self.response.content))
-            self.res = self.imagem.show()
-            return self.res
-        else:
-            self.res = "Falha ao obter a imagem"
-            return None
-    
-    def pegar_poster(self, lista, indice, transform_movie):
-        self.movie = lista[indice]
-        self.poster = transform_movie["results"][self.movie]["poster_path"]
-        return self.poster
-    
-    def pegar_diretor(self, id_filme):
-        self.url = "https://api.themoviedb.org/3/movie/"+ str(id_filme) +"/credits?language=pt-BR"
-
-        self.headers = {
-            "accept": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
-        }
-
-        self.response = requests.get(self.url, headers=self.headers)
-
-        return self.response.text
-
-    def main_api(self):
-        self.token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
-        self.url = "https://api.themoviedb.org/3/discover/movie"
-        self.page = random.randint(1, 200)
-        self.header = "Bearer "+self.token
-        self.headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
-        }   
-        
-        if self.id_genero is not None:
-            self.movie = self.pegar_filme_genero(self.id_genero, self.token)
-            self.transform_movie = json.loads(self.movie)
-            
-            self.lista_indice_filmes = []
-            while len(self.lista_indice_filmes) < 4:
-                self.ran_movie = random.randint(0, 19)
-                if self.ran_movie not in self.lista_indice_filmes:
-                    self.lista_indice_filmes.append(self.ran_movie)
-                else:
-                    self.ran_movie = random.randint(0, 19)
-            print(self.lista_indice_filmes)        
-        else:
-            CTkMessagebox(title= 'Inválido!',
-                message= 'Marque uma opção de gênero!', 
-                icon= 'warning',
-                button_color='#A567BB',
-                button_hover_color='#bc91e6',
-                font=('Berlin Sans FB', 16)
-            )
-        
-        self.pos_filme_principal = self.lista_indice_filmes[0]
-        self.pos_filme1 = self.lista_indice_filmes[1]
-        self.pos_filme2 = self.lista_indice_filmes[2]
-        self.pos_filme2 = self.lista_indice_filmes[3]
-        
-        #info filme principal
-        self.titulo_principal = self.transform_movie['results'][self.pos_filme_principal]["title"]
-        self.lançamento_principal = self.transform_movie["results"][self.pos_filme_principal]["release_date"]
-        self.tmdb_nota_principal = self.transform_movie["results"][self.pos_filme_principal]["vote_average"]
-        self.filme_id_principal = self.transform_movie['results'][self.pos_filme_principal]["id"]
-        self.poster = self.transform_movie["results"][self.pos_filme_principal]["poster_path"]
-        '''self.obter_trailer = self.get_trailer(str(self.filme_id))
-        self.transformar_trailer = json.loads(self.obter_trailer)
-        self.trailers = self.transformar_trailer['results']
-        self.obter_diretor = self.pegar_director(str(self.filme_id))
-        self.transform_director = json.loads(self.obter_diretor)'''
-        
-        #conversões do filme principal
-        self.titulo_principal_convertido = self.titulo_principal
-        self.lançamento_principal_convertido = self.lançamento_principal
-        self.tmdb_nota_principal_convertido = self.tmdb_nota_principal
-        
-        #frame de filmes
-        self.frame_filmes = ctk.CTkTabview(
-            self,
-            width=800, 
-            height=750,
-            segmented_button_selected_color='#A567BB',
-            segmented_button_fg_color='#A567BB',
-            segmented_button_selected_hover_color='#A567BB',
-            segmented_button_unselected_hover_color='#A567BB',
-            segmented_button_unselected_color='#bc91e6'
-        )
-        self.frame_filmes.place(x=350, y=80)
-        self.frame_filmes.add('INDICAÇÃO PRINCIPAL')
-        self.frame_filmes.add('OPÇÃO 1')
-        self.frame_filmes.add('OPÇÃO 2')
-        self.frame_filmes.add('OPÇÃO 3')
-
-        #informação frame principal
-        self.mostrar_titulo_principal = ctk.CTkLabel(
-            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
-            text=f'Título: {self.titulo_principal_convertido}',
-            font=('Berlin Sans FB', 18)
-        )
-        self.mostrar_titulo_principal.grid(row=0, column=0, padx=10, pady=10)
-        
-        self.mostrar_lançamento_principal = ctk.CTkLabel(
-            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
-            text=f'Data de Lançamento: {self.lançamento_principal_convertido}',
-            font=('Berlin Sans FB', 18)
-        )
-        self.mostrar_lançamento_principal.grid(row=1, column=0, padx=10, pady=10)
-        
-        self.mostrar_tmdb_nota_principal = ctk.CTkLabel(
-            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
-            text=f'Nota IMDB: {self.tmdb_nota_principal_convertido}',
-            font=('Berlin Sans FB', 18)
-        )
-        self.mostrar_tmdb_nota_principal.grid(row=2, column=0, padx=10, pady=10)
-
-        '''self.mostra_essa_bosta = self.pegar_imagem(self.poster)
-        self.poster_filme_principal = ctk.CTkLabel(
-            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'), 
-            text='', 
-            image=self.mostra_essa_bosta
-        )
-        self.poster_filme_principal.grid(row=3, column=0, padx=10, pady=10)'''
-        
     def opcoes_usuario(self):
         #frame olá
         self.frame_nome = ctk.CTkFrame(self, width=50, height=50)
         self.frame_nome.place(x=20, y=20)
         self.label_ola = ctk.CTkLabel(
             self.frame_nome,
-            text='  Olá, nome!  ',
+            text=f'Olá, seja bem vindo(a)!',
             font=('Berlin Sans FB', 28)
         )   
         self.label_ola.grid(row=0, column=0, pady=15, padx=15)
@@ -1222,7 +1056,7 @@ class JanelaUsuario(ctk.CTkToplevel):
             command=self.verificar_botao_thriller
         )
         self.botao_thriller.grid(row=20, column=0, pady=1, padx=1, sticky='w')
-        
+
         #botão de gerar recomendação
         self.botao_recomendar = ctk.CTkButton(
             self.frame_usuario.tab('CATEGORIAS DE FILMES'),
@@ -1232,7 +1066,7 @@ class JanelaUsuario(ctk.CTkToplevel):
             text='GERAR RECOMENDAÇÃO',
             font=('Berlin Sans FB', 16),
             corner_radius=15,
-            command=self.main_api
+            command=self.randomizar_filme
         )
         self.botao_recomendar.grid(row=21, column=0, pady=25, padx=5)
         
@@ -1243,6 +1077,383 @@ class JanelaUsuario(ctk.CTkToplevel):
             font=('Berlin Sans FB', 20)
         )   
         self.label_dados.grid(row=0, column=0, pady=15)
-          
-    def filme_principal(self):
+        
+    def randomizar_filme(self):
+        if self.id_genero is not None:
+            genre = self.id_genero
+            filmes = movie_genre(genre)
+            filmes_sorteados = random_movie_pag_genre()
+    
+            #informações do principal
+            id_filme_principal = get_movie_id(filmes_sorteados, 0, filmes)
+            titulo_principal = get_title(filmes_sorteados, 0, filmes)
+            self.titulo_principal = titulo_principal
+            nota_principal = get_tmdb_vote(filmes_sorteados, 0, filmes)
+            self.nota_principal = nota_principal
+            data_principal = get_date(filmes_sorteados, 0, filmes)
+            self.lançamento_principal = data_principal
+            diretor_principal = get_director(id_filme_principal)
+            self.diretor_principal = diretor_principal
+            url_poster_principal = get_poster(filmes_sorteados, 0, filmes)
+            self.converter_imagem_principal = mostrar_imagem(url_poster_principal)
+            trailer_principal = get_trailer(id_filme_principal)
+            self.trailer_principal = trailer_principal
+            sinopse_principal = get_overview(filmes_sorteados, 0, filmes)
+            self.sinopse_principal = sinopse_principal
+            stream_principal = get_streaming(id_filme_principal)
+            self.stream_principal = stream_principal
+            
+            #informações da op1
+            id_filme_op1= get_movie_id(filmes_sorteados, 1, filmes)
+            titulo_op1 = get_title(filmes_sorteados, 1, filmes)
+            self.titulo_op1 = titulo_op1
+            url_poster_op1  = get_poster(filmes_sorteados, 1, filmes)
+            self.converter_imagem_op1 = mostrar_imagem(url_poster_op1)
+            nota_op1 = get_tmdb_vote(filmes_sorteados, 1, filmes)
+            self.nota_op1 = nota_op1
+            data_op1 = get_date(filmes_sorteados, 1, filmes)
+            self.lançamento_op1 = data_op1
+            diretor_op1  = get_director(id_filme_op1)
+            self.diretor_op1 = diretor_op1
+            trailer_op1  = get_trailer(id_filme_op1)
+            self.trailer_op1  = trailer_op1
+            sinopse_op1 = get_overview(filmes_sorteados, 1, filmes)
+            self.sinopse_op1  = sinopse_op1
+            
+            #informações op2
+            id_filme_op2 = get_movie_id(filmes_sorteados, 2, filmes)
+            titulo_op2 = get_title(filmes_sorteados, 2, filmes)
+            self.titulo_op2 = titulo_op2
+            url_poster_op2  = get_poster(filmes_sorteados, 2, filmes)
+            self.converter_imagem_op2 = mostrar_imagem(url_poster_op2)
+            nota_op2 = get_tmdb_vote(filmes_sorteados, 2, filmes)
+            self.nota_op2 = nota_op2
+            data_op2 = get_date(filmes_sorteados, 2, filmes)
+            self.lançamento_op2 = data_op2
+            diretor_op2  = get_director(id_filme_op2)
+            self.diretor_op2 = diretor_op2
+            trailer_op2  = get_trailer(id_filme_op2)
+            self.trailer_op2  = trailer_op2
+            sinopse_op2 = get_overview(filmes_sorteados, 2, filmes)
+            self.sinopse_op2  = sinopse_op2
+            
+            #informações op3
+            id_filme_op3 = get_movie_id(filmes_sorteados, 3, filmes)
+            titulo_op3 = get_title(filmes_sorteados, 3, filmes)
+            self.titulo_op3 = titulo_op3
+            url_poster_op3  = get_poster(filmes_sorteados, 3, filmes)
+            self.converter_imagem_op3 = mostrar_imagem(url_poster_op3)
+            nota_op3 = get_tmdb_vote(filmes_sorteados, 3, filmes)
+            self.nota_op3 = nota_op3
+            data_op3 = get_date(filmes_sorteados, 3, filmes)
+            self.lançamento_op3 = data_op3
+            diretor_op3  = get_director(id_filme_op3)
+            self.diretor_op3 = diretor_op3
+            trailer_op3  = get_trailer(id_filme_op3)
+            self.trailer_op3  = trailer_op3
+            sinopse_op3 = get_overview(filmes_sorteados, 3, filmes)
+            self.sinopse_op3  = sinopse_op3
+
+        else:
+            CTkMessagebox(title= 'Inválido!',
+                message= 'Marque uma opção de gênero!', 
+                icon= 'warning',
+                button_color='#A567BB',
+                button_hover_color='#bc91e6',
+                font=('Berlin Sans FB', 16)
+            )
+        
+        #tab dos filmes
+        self.frame_filmes = ctk.CTkTabview(
+            self,
+            width=800, 
+            height=750,
+            segmented_button_selected_color='#A567BB',
+            segmented_button_fg_color='#A567BB',
+            segmented_button_selected_hover_color='#A567BB',
+            segmented_button_unselected_hover_color='#A567BB',
+            segmented_button_unselected_color='#bc91e6'
+        )
+        self.frame_filmes.place(x=350, y=80)
+        self.frame_filmes.add('INDICAÇÃO PRINCIPAL')
+        self.frame_filmes.add('OPÇÃO 1')
+        self.frame_filmes.add('OPÇÃO 2')
+        self.frame_filmes.add('OPÇÃO 3')
+
+        #informação frame principal
+        self.mostrar_titulo_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'{self.titulo_principal}',
+            font=('Berlin Sans FB', 28)
+        )
+        self.mostrar_titulo_principal.place(x=5, y=20)
+        
+        self.abrir_imagem_principal = ctk.CTkImage(
+            self.converter_imagem_principal, 
+            size=(300, 450)
+            )
+        self.mostrar_imagem_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+                text='', 
+                image=self.abrir_imagem_principal,)
+        self.mostrar_imagem_principal.place(x=450, y=80)
+        
+        self.mostrar_lançamento_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Data de Lançamento: {self.lançamento_principal}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_lançamento_principal.place(x=5, y=80)
+        
+        self.mostrar_tmdb_nota_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Nota IMDB: {self.nota_principal}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_tmdb_nota_principal.place(x=5, y=100)
+        
+        self.mostrar_diretor_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Dirigido por: {self.diretor_principal}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_diretor_principal.place(x=5, y=120)
+
+        self.titulo_sinopse_princial = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text='Sinopse:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_sinopse_princial.place(x=5, y=180)
+        
+        self.mostrar_sinopse_principal = ctk.CTkTextbox(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            width=410,
+            height=310,
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_sinopse_principal.place(x=5, y=220)
+        self.mostrar_sinopse_principal.insert("0.0", f"{self.sinopse_principal}")
+        
+        self.botao_trailer_principal = ctk.CTkButton(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            width=200,
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            text='VER TRAILER',
+            font=('Berlin Sans FB', 18),
+            corner_radius=15,
+            command=lambda: webbrowser.open(f'{self.trailer_principal}')
+        )
+        self.botao_trailer_principal.place(x=500, y=545)
+        
+        self.mostrar_stream_principal = ctk.CTkLabel(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            text=f'Plataforma de Stream: {self.stream_principal}',
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_stream_principal.place(x=5, y=545)
+        
+        #informações op1
+        self.mostrar_titulo_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text=f'{self.titulo_op1}',
+            font=('Berlin Sans FB', 28)
+        )
+        self.mostrar_titulo_op1.place(x=5, y=20)
+        
+        self.abrir_imagem_op1 = ctk.CTkImage(
+            self.converter_imagem_op1, 
+            size=(300, 450)
+            )
+        self.mostrar_imagem_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+                text='', 
+                image=self.abrir_imagem_op1,)
+        self.mostrar_imagem_op1.place(x=450, y=80)
+        
+        self.mostrar_lançamento_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text=f'Data de Lançamento: {self.lançamento_op1}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_lançamento_op1.place(x=5, y=80)
+        
+        self.mostrar_tmdb_nota_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text=f'Nota IMDB: {self.nota_op1}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_tmdb_nota_op1.place(x=5, y=100)
+        
+        self.mostrar_diretor_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text=f'Dirigido por: {self.diretor_op1}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_diretor_op1.place(x=5, y=120)
+        
+        self.titulo_sinopse_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text='Sinopse:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_sinopse_op1.place(x=5, y=180)
+        
+        self.mostrar_sinopse_op1 = ctk.CTkTextbox(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            width=410,
+            height=310,
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_sinopse_op1.place(x=5, y=220)
+        self.mostrar_sinopse_op1.insert("0.0", f"{self.sinopse_op1}")
+        
+        self.botao_trailer_op1 = ctk.CTkButton(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            width=200,
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            text='VER TRAILER',
+            font=('Berlin Sans FB', 18),
+            corner_radius=15,
+            command=lambda: webbrowser.open(f'{self.trailer_op1}')
+        )
+        self.botao_trailer_op1.place(x=500, y=545)
+        
+        #informações op2
+        self.mostrar_titulo_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text=f'{self.titulo_op2}',
+            font=('Berlin Sans FB', 28)
+        )
+        self.mostrar_titulo_op2.place(x=5, y=20)
+        
+        self.abrir_imagem_op2 = ctk.CTkImage(
+            self.converter_imagem_op2, 
+            size=(300, 450)
+            )
+        self.mostrar_imagem_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+                text='', 
+                image=self.abrir_imagem_op2,)
+        self.mostrar_imagem_op2.place(x=450, y=80)
+        
+        self.mostrar_lançamento_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text=f'Data de Lançamento: {self.lançamento_op2}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_lançamento_op2.place(x=5, y=80)
+        
+        self.mostrar_tmdb_nota_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text=f'Nota IMDB: {self.nota_op2}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_tmdb_nota_op2.place(x=5, y=100)
+        
+        self.mostrar_diretor_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text=f'Dirigido por: {self.diretor_op2}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_diretor_op2.place(x=5, y=120)
+        
+        self.titulo_sinopse_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text='Sinopse:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_sinopse_op2.place(x=5, y=180)
+        
+        self.mostrar_sinopse_op2 = ctk.CTkTextbox(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            width=410,
+            height=310,
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_sinopse_op2.place(x=5, y=220)
+        self.mostrar_sinopse_op2.insert("0.0", f"{self.sinopse_op2}")
+        
+        self.botao_trailer_op2 = ctk.CTkButton(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            width=200,
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            text='VER TRAILER',
+            font=('Berlin Sans FB', 18),
+            corner_radius=15,
+            command=lambda: webbrowser.open(f'{self.trailer_op2}')
+        )
+        self.botao_trailer_op2.place(x=500, y=545)
+        
+        #informações op3
+        self.mostrar_titulo_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text=f'{self.titulo_op3}',
+            font=('Berlin Sans FB', 28)
+        )
+        self.mostrar_titulo_op3.place(x=5, y=20)
+        
+        self.abrir_imagem_op3 = ctk.CTkImage(
+            self.converter_imagem_op3, 
+            size=(300, 450)
+            )
+        self.mostrar_imagem_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+                text='', 
+                image=self.abrir_imagem_op3,)
+        self.mostrar_imagem_op3.place(x=450, y=80)
+        
+        self.mostrar_lançamento_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text=f'Data de Lançamento: {self.lançamento_op3}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_lançamento_op3.place(x=5, y=80)
+        
+        self.mostrar_tmdb_nota_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text=f'Nota IMDB: {self.nota_op3}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_tmdb_nota_op3.place(x=5, y=100)
+        
+        self.mostrar_diretor_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text=f'Dirigido por: {self.diretor_op3}',
+            font=('Berlin Sans FB', 18)
+        )
+        self.mostrar_diretor_op3.place(x=5, y=120)
+        
+        self.titulo_sinopse_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text='Sinopse:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_sinopse_op3.place(x=5, y=180)
+        
+        self.mostrar_sinopse_op3 = ctk.CTkTextbox(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            width=410,
+            height=310,
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_sinopse_op3.place(x=5, y=220)
+        self.mostrar_sinopse_op3.insert("0.0", f"{self.sinopse_op3}")
+        
+        self.botao_trailer_op3 = ctk.CTkButton(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            width=200,
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            text='VER TRAILER',
+            font=('Berlin Sans FB', 18),
+            corner_radius=15,
+            command=lambda: webbrowser.open(f'{self.trailer_op3}')
+        )
+        self.botao_trailer_op3.place(x=500, y=545)
+        
+    def ultimos_vistos(self):
         pass

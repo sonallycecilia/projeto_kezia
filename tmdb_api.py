@@ -4,6 +4,7 @@ import random
 from PIL import Image
 from io import BytesIO
 
+
 token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
 url = "https://api.themoviedb.org/3/discover/movie"
 page = random.randint(1,200)
@@ -130,3 +131,27 @@ def get_overview(list_nominated_movies, indice, transform_movie):
     else:
         overview = transform_movie["results"][movie]["overview"]
     return overview
+
+def get_streaming(movie_id):
+  url = "https://api.themoviedb.org/3/movie/"+ str(movie_id) +"/watch/providers"
+
+  headers = {
+      "accept": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
+  }
+
+  response = requests.get(url, headers=headers)
+  response = response.text
+  transform_streaming = json.loads(response)
+  streamings = transform_streaming.get("results",{})
+  if "BR" in streamings :
+    if "flatrate" in streamings["BR"]:
+      streaming = streamings["BR"]["flatrate"][0]["provider_name"]
+    elif "rent" in streamings["BR"]:
+      streaming = streamings["BR"]["rent"][0]["provider_name"]
+    else:
+      streaming = "Não disponível em nenhum serviço de streaming brasileiro."
+  else:
+    streaming = "Não disponível em nenhum serviço de streaming brasileiro."
+
+  return streaming

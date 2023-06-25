@@ -3,7 +3,7 @@ import PIL
 from tkinter import *
 from pagina_usuario import JanelaUsuario
 from database.database import DataBase
-              
+
 class JanelaLogin(ctk.CTk, DataBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -135,7 +135,7 @@ class JanelaLogin(ctk.CTk, DataBase):
             text='ENTRAR',
             font=('Berlin Sans FB', 16),
             corner_radius=15,
-            command=self.abrir_janela_usuario
+            command=self.verificar_login
         )
         self.botao_entrar.grid(row=4, column=0, pady=10, padx=10)
         
