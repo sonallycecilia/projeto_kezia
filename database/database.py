@@ -121,6 +121,7 @@ class DataBase:
             self.senha_login in self.verificar_dados):
             self.abrir_janela_usuario()
             self.desconectar_db()
+        
                 
         else:
             CTkMessagebox(title= 'Erro!',
@@ -131,4 +132,3 @@ class DataBase:
                 font=('Berlin Sans FB', 16)
             )
             self.desconectar_db()
-  

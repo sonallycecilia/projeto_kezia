@@ -11,6 +11,7 @@ class JanelaLogin(ctk.CTk, DataBase):
         self.frame_principal_login()
         self.criar_tabela()
         self.toplevel_window = None
+        
  
     @staticmethod
     def aparencia_temas(setar_dark_light_mode):
@@ -20,9 +21,8 @@ class JanelaLogin(ctk.CTk, DataBase):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             # esconde a janela principal
             self.withdraw()
-            
-            self.toplevel_window = JanelaUsuario(
-                self)  # cria uma janela se não existe nenhuma ou destroi
+            nome_usuario = self.entrada_login_username.get()
+            self.toplevel_window = JanelaUsuario(nome_usuario, self)  # cria uma janela se não existe nenhuma ou destroi
             self.toplevel_window.protocol("WM_DELETE_WINDOW", self.fechar_janela_usuario)
         else:
             self.toplevel_window.focus()  # se a janela existe, foca nela

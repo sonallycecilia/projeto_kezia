@@ -6,19 +6,18 @@ import webbrowser
 from database.database import DataBase
 
 class JanelaUsuario(ctk.CTkToplevel, DataBase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, nome_usuario, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title('Página do Usuário')  
         self.geometry("1450x800")
-        self.opcoes_usuario()
-        
-        #variaveis
+        self.nome_chave_usuario = nome_usuario
+        self.nome_usuario = self.nome_chave_usuario
         self.id_genero = None
+        self.opcoes_usuario()
         '''self.conectar_db()
-        usuario = self.username_login.get()
-        self.username_usuario = usuario
-        print(self.username_usuario)
-        self.desconectar_db()'''
+        self.cursor.execute("SELECT Username FROM 'Usuarios'")
+        for linha in self.cursor.fetchall():
+            print(linha)'''
         
 
     #verificação dos estados do botão e atribuição de valor a variavel self.id_genero
@@ -66,7 +65,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
     
     def verificar_botao_animacao(self):    
         if self.botao_animacao._check_state == True:
-            self.id_genero = 12
+            self.id_genero = 16
             self.botao_acao.configure(state=DISABLED)
             self.botao_aventura.configure(state=DISABLED)
             self.botao_cinemaTV.configure(state=DISABLED)
@@ -108,7 +107,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
     
     def verificar_botao_aventura(self):
         if self.botao_aventura._check_state == True:
-            self.id_genero = 16
+            self.id_genero = 12
             self.botao_acao.configure(state=DISABLED)
             self.botao_animacao.configure(state=DISABLED)
             self.botao_cinemaTV.configure(state=DISABLED)
@@ -822,14 +821,14 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
     
     def opcoes_usuario(self):
         #frame olá
-        self.frame_nome = ctk.CTkFrame(self, width=50, height=50)
+        self.frame_nome = ctk.CTkFrame(self, width=290, height=50)
         self.frame_nome.place(x=20, y=20)
         self.label_ola = ctk.CTkLabel(
             self.frame_nome,
-            text=f'Olá, seja bem vindo(a)!',
+            text=f'Olá, {self.nome_usuario}!',
             font=('Berlin Sans FB', 28)
         )   
-        self.label_ola.grid(row=0, column=0, pady=15, padx=15)
+        self.label_ola.place(x=15, y=10)
         
         #tab geral do usuario
         self.frame_usuario = ctk.CTkTabview(
@@ -1008,7 +1007,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             command=self.verificar_botao_misterio
         )
         self.botao_misterio.grid(row=15, column=0, pady=1, padx=1, sticky='w')
-        
+    
         self.botao_musica = ctk.CTkCheckBox(
             self.frame_usuario.tab('CATEGORIAS DE FILMES'),
             fg_color='#A567BB',
@@ -1022,7 +1021,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         
         self.botao_romance = ctk.CTkCheckBox(
             self.frame_usuario.tab('CATEGORIAS DE FILMES'),
-            fg_color='#A567BB',
+            fg_color='#A567BB', 
             hover_color='#bc91e6',
             text='ROMANCE',
             font=('Berlin Sans FB', 14),
@@ -1126,6 +1125,8 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             self.trailer_op1  = trailer_op1
             sinopse_op1 = get_overview(filmes_sorteados, 1, filmes)
             self.sinopse_op1  = sinopse_op1
+            stream_op1 = get_streaming(id_filme_op1)
+            self.stream_op1 = stream_op1
             
             #informações op2
             id_filme_op2 = get_movie_id(filmes_sorteados, 2, filmes)
@@ -1143,6 +1144,8 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             self.trailer_op2  = trailer_op2
             sinopse_op2 = get_overview(filmes_sorteados, 2, filmes)
             self.sinopse_op2  = sinopse_op2
+            stream_op2 = get_streaming(id_filme_op2)
+            self.stream_op2 = stream_op2
             
             #informações op3
             id_filme_op3 = get_movie_id(filmes_sorteados, 3, filmes)
@@ -1160,6 +1163,8 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             self.trailer_op3  = trailer_op3
             sinopse_op3 = get_overview(filmes_sorteados, 3, filmes)
             self.sinopse_op3  = sinopse_op3
+            stream_op3 = get_streaming(id_filme_op3)
+            self.stream_op3 = stream_op3
 
         else:
             CTkMessagebox(title= 'Inválido!',
@@ -1268,6 +1273,17 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.mostrar_stream_principal.place(x=5, y=565)
         
+        '''self.marcar_filme_principal = ctk.CTkSwitch(
+            self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
+            width=50,
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            text='marcar como visto',
+            font=('Berlin Sans FB', 18),
+            corner_radius=15
+        )
+        self.marcar_filme_principal.place(x=500, y=545)'''
+        
         #informações op1
         self.mostrar_titulo_op1 = ctk.CTkLabel(
             self.frame_filmes.tab('OPÇÃO 1'),
@@ -1334,6 +1350,20 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             command=lambda: webbrowser.open(f'{self.trailer_op1}')
         )
         self.botao_trailer_op1.place(x=500, y=545)
+        
+        self.titulo_stream_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text='Plataforma de Stream:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_stream_op1.place(x=5, y=545)
+        
+        self.mostrar_stream_op1 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            text=f'{self.stream_op1}',
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_stream_op1.place(x=5, y=565)
         
         #informações op2
         self.mostrar_titulo_op2 = ctk.CTkLabel(
@@ -1402,6 +1432,20 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.botao_trailer_op2.place(x=500, y=545)
         
+        self.titulo_stream_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text='Plataforma de Stream:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_stream_op2.place(x=5, y=545)
+        
+        self.mostrar_stream_op2 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            text=f'{self.stream_op2}',
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_stream_op2.place(x=5, y=565)
+        
         #informações op3
         self.mostrar_titulo_op3 = ctk.CTkLabel(
             self.frame_filmes.tab('OPÇÃO 3'),
@@ -1469,6 +1513,31 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.botao_trailer_op3.place(x=500, y=545)
         
-    def ultimos_vistos(self):
-        pass
+        self.titulo_stream_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text='Plataforma de Stream:',
+            font=('Berlin Sans FB', 20)
+        )
+        self.titulo_stream_op3.place(x=5, y=545)
+        
+        self.mostrar_stream_op3 = ctk.CTkLabel(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            text=f'{self.stream_op3}',
+            font=('Berlin Sans FB', 20)
+        )
+        self.mostrar_stream_op3.place(x=5, y=565)
+        
+    '''def ultimos_vistos(self):
+        self.frame_filmes_recentes = ctk.CTkTabview(
+            self,
+            width=100, 
+            height=750,
+            segmented_button_selected_color='#A567BB',
+            segmented_button_fg_color='#A567BB',
+            segmented_button_selected_hover_color='#A567BB',
+            segmented_button_unselected_hover_color='#A567BB',
+            segmented_button_unselected_color='#bc91e6'
+        )
+        self.frame_filmes_recentes.place(x=900, y=80)
+        self.frame_filmes_recentes.add('ULTIMOS VISTOS')'''
 
