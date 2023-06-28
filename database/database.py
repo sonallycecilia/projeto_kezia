@@ -27,6 +27,8 @@ class DataBase:
         self.conn.commit() #coloca os dados na tabela
         print('Tabela criada com sucesso.')
         self.desconectar_db()
+        
+        self.conectar_db()
 
     def cadastrar_usuario(self):
         self.nome_cadastro = self.entrada_nome_cadastro.get()

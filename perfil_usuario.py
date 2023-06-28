@@ -14,6 +14,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.nome_usuario = self.nome_chave_usuario
         self.validar_usuario()
         self.id_genero = None
+        self.id_filme_principal = None
         self.opcoes_usuario()
         self.lista_recentes = []
         self.ultimos_vistos()
@@ -1094,6 +1095,11 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             font=('Berlin Sans FB', 20)
         )   
         self.usuario_nome.grid(row=1, column=0, pady=15)
+    
+    '''def adicionar_filme(self):
+        if self.marcar_filme_principal == True:
+            self.lista_recentes.append(self.id_filme_principal)
+            print(self.id_filme_principal, self.lista_recentes)'''
         
     def randomizar_filme(self):
         if self.id_genero is not None:
@@ -1254,10 +1260,12 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
             width=410,
             height=310,
-            font=('Berlin Sans FB', 20)
+            font=('Berlin Sans FB', 20),
         )
         self.mostrar_sinopse_principal.place(x=5, y=220)
         self.mostrar_sinopse_principal.insert("0.0", f"{self.sinopse_principal}")
+        self.mostrar_sinopse_principal.configure(state='disabled')
+        
         
         self.botao_trailer_principal = ctk.CTkButton(
             self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
@@ -1293,7 +1301,6 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             fg_color='#A567BB',
             hover_color='#bc91e6',
             corner_radius=30,
-            command=self.adicionar_filme
         )
         self.marcar_filme_principal.place(x=520, y=580)
     
@@ -1539,7 +1546,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             font=('Berlin Sans FB', 20)
         )
         self.mostrar_stream_op3.place(x=5, y=565)
-        
+    
     def ultimos_vistos(self):
         self.frame_filmes_recentes = ctk.CTkTabview(
             self,
