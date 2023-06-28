@@ -4,7 +4,6 @@ import random
 from PIL import Image
 from io import BytesIO
 
-
 token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
 url = "https://api.themoviedb.org/3/discover/movie"
 page = random.randint(1,200)
@@ -48,22 +47,22 @@ def random_movie_pag_genre():
             ran_movie = random.randint(0, 19)
     return list_nominated_movies
 
-def get_movie_id(list_nominated_movies,indice,transform_movie):
+def get_movie_id(list_nominated_movies, indice, transform_movie):
     movie = list_nominated_movies[indice]
     movie_id= transform_movie['results'][movie]["id"]
     return str(movie_id)
 
-def get_title(list_nominated_movies,indice,transform_movie):
+def get_title(list_nominated_movies, indice, transform_movie):
     movie = list_nominated_movies[indice]
     title = transform_movie['results'][movie]["title"]
     return title
 
-def get_tmdb_vote(list_nominated_movies,indice,transform_movie):
+def get_tmdb_vote(list_nominated_movies, indice, transform_movie):
     movie = list_nominated_movies[indice]
     tmdb_vote = transform_movie["results"][movie]["vote_average"]
     return tmdb_vote
 
-def get_date(list_nominated_movies,indice,transform_movie):
+def get_date(list_nominated_movies, indice, transform_movie):
     movie = list_nominated_movies[indice]
     date = transform_movie["results"][movie]["release_date"]
     return date

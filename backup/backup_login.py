@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import PIL
 from tkinter import *
-from pagina_usuario import JanelaUsuario
+from perfil_usuario import JanelaUsuario
 from database.database import DataBase
 
 class JanelaLogin(ctk.CTk, DataBase):

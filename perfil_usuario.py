@@ -8,17 +8,21 @@ from database.database import DataBase
 class JanelaUsuario(ctk.CTkToplevel, DataBase):
     def __init__(self, nome_usuario, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title('Página do Usuário')  
-        self.geometry("1450x800")
+        self.title('Perfil do Usuário')  
+        self.geometry("1920x1080")
         self.nome_chave_usuario = nome_usuario
         self.nome_usuario = self.nome_chave_usuario
+        self.validar_usuario()
         self.id_genero = None
         self.opcoes_usuario()
-        '''self.conectar_db()
-        self.cursor.execute("SELECT Username FROM 'Usuarios'")
-        for linha in self.cursor.fetchall():
-            print(linha)'''
+        self.lista_recentes = []
+        self.ultimos_vistos()
         
+    def validar_usuario(self):
+        self.conectar_db()
+        self.cursor.execute("SELECT * FROM Usuarios WHERE Username = ?", (self.nome_usuario,))
+        self.dados_usuario = self.cursor.fetchone()
+        self.desconectar_db()
 
     #verificação dos estados do botão e atribuição de valor a variavel self.id_genero
     def verificar_botao_acao(self):
@@ -833,7 +837,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         #tab geral do usuario
         self.frame_usuario = ctk.CTkTabview(
             self,
-            width=250, 
+            width=200, 
             height=750,
             segmented_button_selected_color='#A567BB',
             segmented_button_fg_color='#A567BB',
@@ -1077,12 +1081,19 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.botao_recomendar.grid(row=21, column=0, pady=25, padx=5)
         
         #elementos dos dados pessoais
-        self.label_dados = ctk.CTkLabel(
+        self. cadastro_titulo = ctk.CTkLabel(
             self.frame_usuario.tab('DADOS PESSOAIS'),
             text='seus dados cadastrais:',
             font=('Berlin Sans FB', 20)
         )   
-        self.label_dados.grid(row=0, column=0, pady=15)
+        self.cadastro_titulo.grid(row=0, column=0, pady=15)
+        
+        self.usuario_nome = ctk.CTkLabel(
+            self.frame_usuario.tab('DADOS PESSOAIS'),
+            text=f'Nome: {self.dados_usuario[1]}',
+            font=('Berlin Sans FB', 20)
+        )   
+        self.usuario_nome.grid(row=1, column=0, pady=15)
         
     def randomizar_filme(self):
         if self.id_genero is not None:
@@ -1092,6 +1103,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
     
             #informações do principal
             id_filme_principal = get_movie_id(filmes_sorteados, 0, filmes)
+            self.id_filme_principal = id_filme_principal
             titulo_principal = get_title(filmes_sorteados, 0, filmes)
             self.titulo_principal = titulo_principal
             nota_principal = get_tmdb_vote(filmes_sorteados, 0, filmes)
@@ -1271,19 +1283,20 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             text=f'{self.stream_principal}',
             font=('Berlin Sans FB', 20)
         )
-        self.mostrar_stream_principal.place(x=5, y=565)
+        self.mostrar_stream_principal.place(x=5, y=575)
         
-        '''self.marcar_filme_principal = ctk.CTkSwitch(
+        self.marcar_filme_principal = ctk.CTkCheckBox(
             self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
             width=50,
+            text='marcar como visto',
+            font=('Berlin Sans FB', 16),
             fg_color='#A567BB',
             hover_color='#bc91e6',
-            text='marcar como visto',
-            font=('Berlin Sans FB', 18),
-            corner_radius=15
+            corner_radius=30,
+            command=self.adicionar_filme
         )
-        self.marcar_filme_principal.place(x=500, y=545)'''
-        
+        self.marcar_filme_principal.place(x=520, y=580)
+    
         #informações op1
         self.mostrar_titulo_op1 = ctk.CTkLabel(
             self.frame_filmes.tab('OPÇÃO 1'),
@@ -1527,10 +1540,10 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.mostrar_stream_op3.place(x=5, y=565)
         
-    '''def ultimos_vistos(self):
+    def ultimos_vistos(self):
         self.frame_filmes_recentes = ctk.CTkTabview(
             self,
-            width=100, 
+            width=320, 
             height=750,
             segmented_button_selected_color='#A567BB',
             segmented_button_fg_color='#A567BB',
@@ -1538,6 +1551,5 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             segmented_button_unselected_hover_color='#A567BB',
             segmented_button_unselected_color='#bc91e6'
         )
-        self.frame_filmes_recentes.place(x=900, y=80)
-        self.frame_filmes_recentes.add('ULTIMOS VISTOS')'''
-
+        self.frame_filmes_recentes.place(x=1190, y=80)
+        self.frame_filmes_recentes.add('ULTIMOS VISTOS')

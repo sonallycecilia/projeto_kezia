@@ -1,7 +1,8 @@
+#Nome do grupo: Anthony, Maria Eduarda M., Maria Eduarda V., Sonally Cecília
 import customtkinter as ctk
 import PIL
 from tkinter import *
-from pagina_usuario import JanelaUsuario
+from perfil_usuario import JanelaUsuario
 from database.database import DataBase
 
 class JanelaLogin(ctk.CTk, DataBase):
@@ -11,7 +12,6 @@ class JanelaLogin(ctk.CTk, DataBase):
         self.frame_principal_login()
         self.criar_tabela()
         self.toplevel_window = None
-        
  
     @staticmethod
     def aparencia_temas(setar_dark_light_mode):
