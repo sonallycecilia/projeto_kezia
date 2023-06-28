@@ -11,6 +11,7 @@ class JanelaLogin(ctk.CTk, DataBase):
         self.aparencia_programa()
         self.frame_principal_login()
         self.criar_tabela()
+        self.criar_tabela_filme()
         self.toplevel_window = None
  
     @staticmethod

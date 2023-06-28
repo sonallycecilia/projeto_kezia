@@ -14,7 +14,6 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.nome_usuario = self.nome_chave_usuario
         self.validar_usuario()
         self.id_genero = None
-        self.id_filme_principal = None
         self.opcoes_usuario()
         self.lista_recentes = []
         self.ultimos_vistos()
@@ -826,14 +825,23 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
     
     def opcoes_usuario(self):
         #frame olá
-        self.frame_nome = ctk.CTkFrame(self, width=290, height=50)
-        self.frame_nome.place(x=20, y=20)
+        self.frame_nome_usuario = ctk.CTkFrame(self, width=290, height=50)
+        self.frame_nome_usuario.place(x=20, y=20)
         self.label_ola = ctk.CTkLabel(
-            self.frame_nome,
+            self.frame_nome_usuario,
             text=f'Olá, {self.nome_usuario}!',
             font=('Berlin Sans FB', 28)
         )   
         self.label_ola.place(x=15, y=10)
+        
+        self.frame_nome_programa = ctk.CTkFrame(self, width=800, height=50)
+        self.frame_nome_programa.place(x=350, y=20)
+        self.label_programa = ctk.CTkLabel(
+            self.frame_nome_programa,
+            text='Indicações Ixculashadas',
+            font=('Berlin Sans FB', 28)
+        )   
+        self.label_programa.place(x=270, y=10)
         
         #tab geral do usuario
         self.frame_usuario = ctk.CTkTabview(
@@ -853,7 +861,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         #elementos da tab categorias
         self.label_intrucoes = ctk.CTkLabel(
             self.frame_usuario.tab('CATEGORIAS DE FILMES'),
-            text='selecione um gênero abaixo \npara indicarmos um filme:',
+            text='selecione um gênero abaixo \npara fazermos uma indicação',
             font=('Berlin Sans FB', 20)
         )   
         self.label_intrucoes.grid(row=0, column=0, pady=15)
@@ -1095,12 +1103,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             font=('Berlin Sans FB', 20)
         )   
         self.usuario_nome.grid(row=1, column=0, pady=15)
-    
-    def adicionar_filme(self):
-        if self.marcar_filme_principal._check_state == True:
-            self.lista_recentes.append(self.id_filme_principal)
-            print(self.id_filme_principal, self.lista_recentes)
-        
+     
     def randomizar_filme(self):
         if self.id_genero is not None:
             genre = self.id_genero
@@ -1129,6 +1132,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             
             #informações da op1
             id_filme_op1= get_movie_id(filmes_sorteados, 1, filmes)
+            self.id_filme_op1= id_filme_op1
             titulo_op1 = get_title(filmes_sorteados, 1, filmes)
             self.titulo_op1 = titulo_op1
             url_poster_op1  = get_poster(filmes_sorteados, 1, filmes)
@@ -1148,6 +1152,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             
             #informações op2
             id_filme_op2 = get_movie_id(filmes_sorteados, 2, filmes)
+            self.id_filme_op2 = id_filme_op2
             titulo_op2 = get_title(filmes_sorteados, 2, filmes)
             self.titulo_op2 = titulo_op2
             url_poster_op2  = get_poster(filmes_sorteados, 2, filmes)
@@ -1167,6 +1172,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             
             #informações op3
             id_filme_op3 = get_movie_id(filmes_sorteados, 3, filmes)
+            self.id_filme_op3 = id_filme_op3
             titulo_op3 = get_title(filmes_sorteados, 3, filmes)
             self.titulo_op3 = titulo_op3
             url_poster_op3  = get_poster(filmes_sorteados, 3, filmes)
@@ -1300,10 +1306,9 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             fg_color='#A567BB',
             hover_color='#bc91e6',
             corner_radius=30,
-            command=self.adicionar_filme
+            command=self.adicionar_filme_principal
         )
         self.marcar_filme_principal.place(x=520, y=580)
-        print(self.id_filme_principal)
     
         #informações op1
         self.mostrar_titulo_op1 = ctk.CTkLabel(
@@ -1385,7 +1390,19 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             text=f'{self.stream_op1}',
             font=('Berlin Sans FB', 20)
         )
-        self.mostrar_stream_op1.place(x=5, y=565)
+        self.mostrar_stream_op1.place(x=5, y=575)
+        
+        self.marcar_filme_op1 = ctk.CTkCheckBox(
+            self.frame_filmes.tab('OPÇÃO 1'),
+            width=50,
+            text='marcar como visto',
+            font=('Berlin Sans FB', 16),
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            corner_radius=30,
+            command=self.adicionar_filme_op1
+        )
+        self.marcar_filme_op1.place(x=520, y=580)
         
         #informações op2
         self.mostrar_titulo_op2 = ctk.CTkLabel(
@@ -1467,7 +1484,19 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             text=f'{self.stream_op2}',
             font=('Berlin Sans FB', 20)
         )
-        self.mostrar_stream_op2.place(x=5, y=565)
+        self.mostrar_stream_op2.place(x=5, y=575)
+        
+        self.marcar_filme_op2 = ctk.CTkCheckBox(
+            self.frame_filmes.tab('OPÇÃO 2'),
+            width=50,
+            text='marcar como visto',
+            font=('Berlin Sans FB', 16),
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            corner_radius=30,
+            command=self.adicionar_filme_op2
+        )
+        self.marcar_filme_op2.place(x=520, y=580)
         
         #informações op3
         self.mostrar_titulo_op3 = ctk.CTkLabel(
@@ -1549,9 +1578,24 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             text=f'{self.stream_op3}',
             font=('Berlin Sans FB', 20)
         )
-        self.mostrar_stream_op3.place(x=5, y=565)
+        self.mostrar_stream_op3.place(x=5, y=575)
+        
+        self.marcar_filme_op3 = ctk.CTkCheckBox(
+            self.frame_filmes.tab('OPÇÃO 3'),
+            width=50,
+            text='marcar como visto',
+            font=('Berlin Sans FB', 16),
+            fg_color='#A567BB',
+            hover_color='#bc91e6',
+            corner_radius=30,
+            command=self.adicionar_filme_op3
+        )
+        self.marcar_filme_op3.place(x=520, y=580)
     
     def ultimos_vistos(self):
+        self.lista_recentes = self.lista_filmes_username()
+        print(self.lista_recentes)
+                
         self.frame_filmes_recentes = ctk.CTkTabview(
             self,
             width=320, 
@@ -1564,3 +1608,4 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.frame_filmes_recentes.place(x=1190, y=80)
         self.frame_filmes_recentes.add('ULTIMOS VISTOS')
+        

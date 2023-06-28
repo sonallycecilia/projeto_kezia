@@ -18,14 +18,15 @@ class DataBase:
             CREATE TABLE IF NOT EXISTS Usuarios(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Nome TEXT NOT NULL,
-                Username TEXT NOT NULL UNIQUE, 
+                Username TEXT NOT NULL, 
                 Numero INTEGER NOT NULL,
                 Senha TEXT NOT NULL, 
-                Confirmar_senha TEXT NOT NULL,
+                Confirmar_senha TEXT NOT NULL
             );
         ''') #cria comandos sql no python de forma organizada
         self.conn.commit() #coloca os dados na tabela
         print('Tabela Usuario criada com sucesso.')
+        self.desconectar_db()
         
     def cadastrar_usuario(self):
         self.nome_cadastro = self.entrada_nome_cadastro.get()
@@ -131,3 +132,113 @@ class DataBase:
                 font=('Berlin Sans FB', 16)
             )
             self.desconectar_db()
+            
+    def criar_tabela_filme(self):
+        self.conectar_db()
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Filmes(
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Username TEXT NOT NULL, 
+                id_filme INTEGER,
+                FOREIGN KEY (Username) REFERENCES Usuarios(Username)
+            );
+        ''')
+        self.conn.commit() 
+        print('Tabela Filmes criada com sucesso.')
+        self.desconectar_db()
+        
+    def adicionar_filme_principal(self):
+        self.conectar_db()
+        if self.marcar_filme_principal._check_state == True:
+            self.cursor.execute("""
+                INSERT INTO Filmes
+                (Username, id_filme)
+                VALUES (?, ?)""", 
+                (self.nome_usuario, self.id_filme_principal)
+            )
+            self.conn.commit()
+            
+        elif self.marcar_filme_principal._check_state == False:
+            self.conectar_db()
+            self.cursor.execute("""
+                DELETE FROM Filmes
+                WHERE (Username, id_filme) = (?, ?)""",
+                (self.nome_usuario,  self.id_filme_principal)
+            )
+            self.conn.commit()
+        self.desconectar_db()
+                
+    def adicionar_filme_op1(self):
+        self.conectar_db()
+        if self.marcar_filme_op1._check_state == True:
+            self.cursor.execute("""
+                INSERT INTO Filmes
+                (Username, id_filme)
+                VALUES (?, ?)""", 
+                (self.nome_usuario, self.id_filme_op1)
+            )
+            self.conn.commit()
+            self.desconectar_db()
+            
+        elif self.marcar_filme_op1._check_state == False:
+            self.cursor.execute("""
+                DELETE FROM Filmes
+                WHERE (Username, id_filme) = (?, ?)""",
+                (self.nome_usuario,  self.id_filme_op1)
+            )
+            self.conn.commit()
+        self.desconectar_db()
+            
+    def adicionar_filme_op2(self):
+        self.conectar_db()
+        if self.marcar_filme_op2._check_state == True:
+            self.cursor.execute("""
+                INSERT INTO Filmes
+                (Username, id_filme)
+                VALUES (?, ?)""", 
+                (self.nome_usuario, self.id_filme_op2)
+            )
+            self.conn.commit()
+            self.desconectar_db()
+            
+        elif self.marcar_filme_op2._check_state == False:
+            self.cursor.execute("""
+                DELETE FROM Filmes
+                WHERE (Username, id_filme) = (?, ?)""",
+                (self.nome_usuario,  self.id_filme_op2)
+            )
+            self.conn.commit()
+        self.desconectar_db()
+    
+    def adicionar_filme_op3(self):
+        self.conectar_db()
+        if self.marcar_filme_op3._check_state == True:
+            self.cursor.execute("""
+                INSERT INTO Filmes
+                (Username, id_filme)
+                VALUES (?, ?)""", 
+                (self.nome_usuario, self.id_filme_op3)
+            )
+            self.conn.commit()
+            self.desconectar_db()
+            
+        elif self.marcar_filme_op3._check_state == False:
+            self.cursor.execute("""
+                DELETE FROM Filmes
+                WHERE (Username, id_filme) = (?, ?)""",
+                (self.nome_usuario,  self.id_filme_op3)
+            )
+            self.conn.commit()
+        self.desconectar_db()
+        
+    def lista_filmes_username(self):
+        self.conectar_db()
+        self.cursor.execute("""
+            SELECT id_filme
+            FROM Filmes
+            WHERE Username = ?""",
+            (self.nome_usuario,)
+        )
+        id_filmes = [row[0] for row in self.cursor.fetchall()]
+        self.desconectar_db()
+        return id_filmes

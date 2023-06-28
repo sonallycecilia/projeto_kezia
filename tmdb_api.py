@@ -72,10 +72,9 @@ def get_poster(list_nominated_movies, indice, transform_movie):
   posters = transform_movie["results"][movie]["poster_path"]
   if posters:
     poster = "https://image.tmdb.org/t/p/w500" + str(posters)
-    return poster
   else:
-    poster = "Não tem poster disponível"
-    return poster
+    poster = "https://i.ibb.co/CvHq2dr/Inserir-um-t-tulo.png"
+  return poster
 
 def get_trailer(movie_id):
   url = "https://api.themoviedb.org/3/movie/"+ str(movie_id) +"/videos?language=pt-BR"
@@ -102,25 +101,20 @@ def get_trailer(movie_id):
   return trailer
 
 def get_director(movie_id):
-    url = "https://api.themoviedb.org/3/movie/"+ str(movie_id) +"/credits?language=pt-BR"
-    headers = {
-        "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
-    }
-    response = requests.get(url, headers=headers)
-    response = response.text
-    director = []
-    transform_director = json.loads(response)
-    for j in range(len(transform_director['crew'])):
-        if transform_director['crew'][j]['job'] == "Director":
-            director.append(transform_director['crew'][j]['name'])
-    return director
-
-def mostrar_imagem(url):
-    resposta = requests.get(url)
-    conteudo_imagem = resposta.content
-    imagem_pil = Image.open(BytesIO(conteudo_imagem))
-    return imagem_pil
+  url = "https://api.themoviedb.org/3/movie/"+ str(movie_id) +"/credits?language=pt-BR"
+  headers = {
+      "accept": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MzQ4YjZlYTcwZmIyZmFlYmEzOWFhNmIyYTg5YTY2ZCIsInN1YiI6IjY0N2Y2YTMwMzg1MjAyMDBhZjE0ZTAxMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KRNryLZZzPdxCe0c6UYv6LLlzZlAnrVGd8Y4q8xCm-0"
+  }
+  response = requests.get(url, headers=headers)
+  response = response.text
+  director = []
+  transform_director = json.loads(response)
+  for j in range(len(transform_director['crew'])):
+    if transform_director['crew'][j]['job'] == "Director":
+      if len(director) < 2:
+        director.append(transform_director['crew'][j]['name'])
+  return ', '.join(director)
 
 def get_overview(list_nominated_movies, indice, transform_movie):
     movie = list_nominated_movies[indice]
@@ -154,3 +148,10 @@ def get_streaming(movie_id):
     streaming = "Não disponível em nenhum serviço de streaming brasileiro."
 
   return streaming
+
+def mostrar_imagem(url):
+    resposta = requests.get(url)
+    conteudo_imagem = resposta.content
+    imagem_pil = Image.open(BytesIO(conteudo_imagem))
+    return imagem_pil
+  
