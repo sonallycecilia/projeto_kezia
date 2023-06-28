@@ -21,15 +21,12 @@ class DataBase:
                 Username TEXT NOT NULL UNIQUE, 
                 Numero INTEGER NOT NULL,
                 Senha TEXT NOT NULL, 
-                Confirmar_senha TEXT NOT NULL
+                Confirmar_senha TEXT NOT NULL,
             );
         ''') #cria comandos sql no python de forma organizada
         self.conn.commit() #coloca os dados na tabela
-        print('Tabela criada com sucesso.')
-        self.desconectar_db()
+        print('Tabela Usuario criada com sucesso.')
         
-        self.conectar_db()
-
     def cadastrar_usuario(self):
         self.nome_cadastro = self.entrada_nome_cadastro.get()
         self.username_cadastro = self.entrada_username_cadastro.get()

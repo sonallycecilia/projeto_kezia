@@ -1096,10 +1096,10 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )   
         self.usuario_nome.grid(row=1, column=0, pady=15)
     
-    '''def adicionar_filme(self):
-        if self.marcar_filme_principal == True:
+    def adicionar_filme(self):
+        if self.marcar_filme_principal._check_state == True:
             self.lista_recentes.append(self.id_filme_principal)
-            print(self.id_filme_principal, self.lista_recentes)'''
+            print(self.id_filme_principal, self.lista_recentes)
         
     def randomizar_filme(self):
         if self.id_genero is not None:
@@ -1266,7 +1266,6 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.mostrar_sinopse_principal.insert("0.0", f"{self.sinopse_principal}")
         self.mostrar_sinopse_principal.configure(state='disabled')
         
-        
         self.botao_trailer_principal = ctk.CTkButton(
             self.frame_filmes.tab('INDICAÇÃO PRINCIPAL'),
             width=200,
@@ -1301,8 +1300,10 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
             fg_color='#A567BB',
             hover_color='#bc91e6',
             corner_radius=30,
+            command=self.adicionar_filme
         )
         self.marcar_filme_principal.place(x=520, y=580)
+        print(self.id_filme_principal)
     
         #informações op1
         self.mostrar_titulo_op1 = ctk.CTkLabel(
@@ -1358,6 +1359,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.mostrar_sinopse_op1.place(x=5, y=220)
         self.mostrar_sinopse_op1.insert("0.0", f"{self.sinopse_op1}")
+        self.mostrar_sinopse_op1.configure(state='disabled')
         
         self.botao_trailer_op1 = ctk.CTkButton(
             self.frame_filmes.tab('OPÇÃO 1'),
@@ -1439,6 +1441,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.mostrar_sinopse_op2.place(x=5, y=220)
         self.mostrar_sinopse_op2.insert("0.0", f"{self.sinopse_op2}")
+        self.mostrar_sinopse_op2.configure(state='disabled')
         
         self.botao_trailer_op2 = ctk.CTkButton(
             self.frame_filmes.tab('OPÇÃO 2'),
@@ -1520,6 +1523,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         )
         self.mostrar_sinopse_op3.place(x=5, y=220)
         self.mostrar_sinopse_op3.insert("0.0", f"{self.sinopse_op3}")
+        self.mostrar_sinopse_op3.configure(state='disabled')
         
         self.botao_trailer_op3 = ctk.CTkButton(
             self.frame_filmes.tab('OPÇÃO 3'),
