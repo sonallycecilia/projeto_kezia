@@ -243,14 +243,16 @@ class JanelaLogin(ctk.CTk, DataBase):
         
         self.verificar_username = ctk.CTkButton(
             self.frame_cadastro,
-            width=150,
-            fg_color='#A567BB',
+            width=30,
+            height=15,
+            text='verificar username',
+            fg_color='transparent',
             hover_color='#bc91e6',
-            text='VERFICAR NOME DE USUÁRIO',
-            font=('Berlin Sans FB', 16),
-            corner_radius=15
+            font=('Berlin Sans FB', 14),
+            corner_radius=20,
+            command=self.validar_username
         )
-        self.verificar_username.grid(row=4, column=0, pady=5, padx=10)
+        self.verificar_username.grid(row=4, column=0, padx=20, pady=0, sticky='w')
         
         self.entrada_numero_cadastro = ctk.CTkEntry(
             self.frame_cadastro,

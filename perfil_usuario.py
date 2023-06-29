@@ -15,15 +15,17 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.validar_usuario()
         self.id_genero = None
         self.opcoes_usuario()
-        self.lista_recentes = []
-        self.ultimos_vistos()
+        self.lista_recentes = self.lista_filmes_username()
+        if self.lista_recentes is not None:
+            self.lista_recentes.reverse()
+            self.ultimos_vistos()
         
     def validar_usuario(self):
         self.conectar_db()
         self.cursor.execute("SELECT * FROM Usuarios WHERE Username = ?", (self.nome_usuario,))
         self.dados_usuario = self.cursor.fetchone()
         self.desconectar_db()
-
+        
     #verificação dos estados do botão e atribuição de valor a variavel self.id_genero
     def verificar_botao_acao(self):
         if self.botao_acao._check_state == True:
@@ -1108,6 +1110,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         if self.id_genero is not None:
             genre = self.id_genero
             filmes = movie_genre(genre)
+            self.testando = filmes
             filmes_sorteados = random_movie_pag_genre()
     
             #informações do principal
@@ -1593,19 +1596,62 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.marcar_filme_op3.place(x=520, y=580)
     
     def ultimos_vistos(self):
-        self.lista_recentes = self.lista_filmes_username()
-        print(self.lista_recentes)
-                
         self.frame_filmes_recentes = ctk.CTkTabview(
-            self,
-            width=320, 
-            height=750,
-            segmented_button_selected_color='#A567BB',
-            segmented_button_fg_color='#A567BB',
-            segmented_button_selected_hover_color='#A567BB',
-            segmented_button_unselected_hover_color='#A567BB',
-            segmented_button_unselected_color='#bc91e6'
-        )
-        self.frame_filmes_recentes.place(x=1190, y=80)
-        self.frame_filmes_recentes.add('ULTIMOS VISTOS')
+                self, width=320, height=800
+            )
+        self.frame_filmes_recentes.place(x=1190, y=0)
+            
+        self.label_recentes = ctk.CTkLabel(
+                self.frame_filmes_recentes,
+                text='Ultimos filmes vistos:',
+                font=('Berlin Sans FB', 18)
+            )   
+        self.label_recentes.place(x=5, y=20)
+        
+        if self.lista_recentes is not None:
+            if len(self.lista_recentes) >= 0:
+                url_recente1 = get_movie_by_id(self.lista_recentes[0])
+                self.imagem_recente1 = mostrar_imagem(url_recente1)
+
+                self.abrir_imagem_recente1 = ctk.CTkImage(
+                    self.imagem_recente1, 
+                    size=(150, 225)
+                    )
+                self.mostrar_imagem_recente1 = ctk.CTkLabel(
+                    self.frame_filmes_recentes,
+                        text='', 
+                        image=self.abrir_imagem_recente1)
+                self.mostrar_imagem_recente1.place(x=80, y=65)
+            
+            if len(self.lista_recentes) >= 1:
+                url_recente2 = get_movie_by_id(self.lista_recentes[1])
+                self.imagem_recente2 = mostrar_imagem(url_recente2)
+                
+                self.abrir_imagem_recente2 = ctk.CTkImage(
+                    self.imagem_recente2, 
+                    size=(150, 225)
+                    )
+                self.mostrar_imagem_recente2 = ctk.CTkLabel(
+                    self.frame_filmes_recentes,
+                        text='', 
+                        image=self.abrir_imagem_recente2)
+                self.mostrar_imagem_recente2.place(x=80, y=305)
+                
+            if len(self.lista_recentes) >= 2:
+                
+                url_recente3 = get_movie_by_id(self.lista_recentes[2])
+                self.imagem_recente3 = mostrar_imagem(url_recente3)
+        
+                self.abrir_imagem_recente3 = ctk.CTkImage(
+                    self.imagem_recente3, 
+                    size=(150, 225)
+                    )
+                self.mostrar_imagem_recente3 = ctk.CTkLabel(
+                    self.frame_filmes_recentes,
+                        text='', 
+                        image=self.abrir_imagem_recente3)
+                self.mostrar_imagem_recente3.place(x=80, y=545)
+            
+            else:
+                pass
         

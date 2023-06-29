@@ -18,7 +18,7 @@ class DataBase:
             CREATE TABLE IF NOT EXISTS Usuarios(
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Nome TEXT NOT NULL,
-                Username TEXT NOT NULL, 
+                Username TEXT NOT NULL UNIQUE, 
                 Numero INTEGER NOT NULL,
                 Senha TEXT NOT NULL, 
                 Confirmar_senha TEXT NOT NULL
@@ -27,7 +27,32 @@ class DataBase:
         self.conn.commit() #coloca os dados na tabela
         print('Tabela Usuario criada com sucesso.')
         self.desconectar_db()
+    
+    def validar_username(self):
+        self.conectar_db()
+        self.username_cadastro = self.entrada_username_cadastro.get()
+        self.cursor.execute("SELECT * FROM usuarios WHERE username = ?",
+                            (self.username_cadastro,))
+        resultado_username = self.cursor.fetchone()
+        self.desconectar_db()
         
+        if resultado_username is None:
+            CTkMessagebox(title= 'Liberado!',
+                message= 'O nome de usuário é válido!', 
+                icon= 'check', 
+                button_color='#A567BB', 
+                button_hover_color='#bc91e6',
+                font=('Berlin Sans FB', 16)
+            )
+        if len(resultado_username) > 0:
+            CTkMessagebox(title= 'Erro!',
+                message= 'O nome de usuário já está em uso!', 
+                icon= 'cancel', 
+                button_color='#A567BB', 
+                button_hover_color='#bc91e6',
+                font=('Berlin Sans FB', 16)
+            )
+            
     def cadastrar_usuario(self):
         self.nome_cadastro = self.entrada_nome_cadastro.get()
         self.username_cadastro = self.entrada_username_cadastro.get()
@@ -103,34 +128,32 @@ class DataBase:
         self.username_login = self.entrada_login_username.get()
         self.senha_login = self.entrada_senha_login.get()
         self.conectar_db()
-        self.cursor.execute("""SELECT * FROM Usuarios WHERE
-                            (Username = ? AND Senha = ?)""",
-                            (self.username_login, self.senha_login))
-        self.verificar_dados = self.cursor.fetchone() #percorrer a tabela de usuários
-        
-        if (self.username_login == '' or self.username_login == '' ):
-            CTkMessagebox(title= 'Inválido!',
-                            message= 'Preencha todos os campos.', 
-                            icon= 'warning',
-                            button_color='#A567BB',
-                            button_hover_color='#bc91e6',
-                            font=('Berlin Sans FB', 16)
-                )
+        self.cursor.execute("SELECT * FROM Usuarios WHERE Username = ? AND Senha = ?", (self.username_login, self.senha_login))
+        self.verificar_dados = self.cursor.fetchone()
 
+        if self.username_login == '' or self.senha_login == '':
+            CTkMessagebox(title='Inválido!', message='Preencha todos os campos.', icon='warning',
+                        button_color='#A567BB', button_hover_color='#bc91e6', font=('Berlin Sans FB', 16))
+            self.desconectar_db()
+        
+        elif self.verificar_dados is None:
+            CTkMessagebox(title='Erro!', message='Erro: Usuário não existente! Cadastre-se!', icon='cancel',
+                        button_color='#A567BB', button_hover_color='#bc91e6', font=('Berlin Sans FB', 16))
+            self.desconectar_db()
+        
         elif (self.username_login in self.verificar_dados and
             self.senha_login in self.verificar_dados):
             self.abrir_janela_usuario()
             self.desconectar_db()
         
-                
         else:
             CTkMessagebox(title= 'Erro!',
-                message= 'Erro ao efetuar o cadastro!', 
-                icon= 'cancel', 
-                button_color='#A567BB', 
-                button_hover_color='#bc91e6',
-                font=('Berlin Sans FB', 16)
-            )
+                        message= 'Erro ao efetuar o login! \nTente novamente.',
+                        icon= 'cancel',
+                        button_color='#A567BB',
+                        button_hover_color='#bc91e6',
+                        font=('Berlin Sans FB', 16)
+                    )
             self.desconectar_db()
             
     def criar_tabela_filme(self):

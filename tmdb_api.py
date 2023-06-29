@@ -155,3 +155,15 @@ def mostrar_imagem(url):
     imagem_pil = Image.open(BytesIO(conteudo_imagem))
     return imagem_pil
   
+def get_movie_by_id(id_filme):
+  movie_url = "https://api.themoviedb.org/3/movie/"+str(id_filme)+"?api_key=4348b6ea70fb2faeba39aa6b2a89a66d"
+  response = requests.get(movie_url)
+  response = response.text
+  transform_movie = json.loads(response)
+  poster_watched_movies = transform_movie["poster_path"]
+  if poster_watched_movies:
+    poster_watched_movie = "https://image.tmdb.org/t/p/w500" + str(poster_watched_movies)
+  else:
+    poster_watched_movie = "https://i.ibb.co/CvHq2dr/Inserir-um-t-tulo.png"
+  return poster_watched_movie
+  
