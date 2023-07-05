@@ -32,8 +32,8 @@ def get_movie_by_genre(genre_id, auth_token):
     response = requests.get(url, headers=headers, params=params)
     return response.text
 
-def movie_genre(genre):
-    movie = get_movie_by_genre(genre, token)
+def movie_genre(genre_id):
+    movie = get_movie_by_genre(genre_id, token)
     transform_movie = json.loads(movie) #essa linda pega meu filme dependendo do genêro e transforma o json em dic"
     return transform_movie
 
@@ -63,9 +63,13 @@ def get_tmdb_vote(list_nominated_movies, indice, transform_movie):
     return tmdb_vote
 
 def get_date(list_nominated_movies, indice, transform_movie):
-    movie = list_nominated_movies[indice]
-    date = transform_movie["results"][movie]["release_date"]
-    return date
+    try:
+      movie = list_nominated_movies[indice]
+      date = transform_movie["results"][movie]["release_date"]
+    except:
+      date = "Não exista data de lançamenti dispónivel para este filme"
+    finally:
+      return date
 
 def get_poster(list_nominated_movies, indice, transform_movie):
   movie = list_nominated_movies[indice]

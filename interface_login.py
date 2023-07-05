@@ -170,7 +170,7 @@ class JanelaLogin(ctk.CTk, DataBase):
     def frame_principal_cadastro(self):
         # limpar tela de login
         self.frame_login.place_forget()
-        self.frame_boas_vindas.place_forget
+        self.frame_boas_vindas.place_forget()
         
         # frame dos widgets
         self.frame_cadastro = ctk.CTkFrame(self, width=350, height=380)

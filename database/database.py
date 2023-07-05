@@ -6,11 +6,9 @@ class DataBase:
     def conectar_db(self): #conectar ao banco de dados
         self.conn = sqlite3.connect('database\Sistema_cadastro.db') #cria o banco
         self.cursor = self.conn.cursor() #ponto de entrada
-        print('Banco de dados conectado.')
         
     def desconectar_db(self):
         self.conn.close() #desconecta o banco de dados
-        print('Banco de dados desconectado.')
         
     def criar_tabela(self):
         self.conectar_db() #conecta ao banco de dados
@@ -25,7 +23,6 @@ class DataBase:
             );
         ''') #cria comandos sql no python de forma organizada
         self.conn.commit() #coloca os dados na tabela
-        print('Tabela Usuario criada com sucesso.')
         self.desconectar_db()
     
     def validar_username(self):
@@ -44,6 +41,7 @@ class DataBase:
                 button_hover_color='#bc91e6',
                 font=('Berlin Sans FB', 16)
             )
+        
         if len(resultado_username) > 0:
             CTkMessagebox(title= 'Erro!',
                 message= 'O nome de usuário já está em uso!', 
@@ -82,6 +80,7 @@ class DataBase:
                                 font=('Berlin Sans FB', 16)
                 )
                 self.desconectar_db()            
+        
         elif (len(self.username_cadastro) < 4):
             CTkMessagebox(title= 'Nome de usuário inválido!',
                             message= 'O username deve conter mais de 4 caracteres.', 
@@ -91,6 +90,7 @@ class DataBase:
                             font=('Berlin Sans FB', 16)
             )
             self.desconectar_db()            
+        
         elif (len(self.senha_cadastro) < 6):
             CTkMessagebox(title= 'Senha inválida!',
                             message= 'A senha deve conter mais de 5 caracteres.', 
@@ -100,6 +100,7 @@ class DataBase:
                             font=('Berlin Sans FB', 16)
             )
             self.desconectar_db()            
+        
         elif (len(self.numero_cadastro) != 11):
             CTkMessagebox(title= 'Número com formato inválido!',
                             message= 'Digite apenas números no formato: \n(xx) xxxxx-xxxx', 
@@ -109,6 +110,7 @@ class DataBase:
                             font=('Berlin Sans FB', 16)
             )
             self.desconectar_db()         
+        
         elif (self.senha_cadastro != self.confirmar_senha_cadastro):
             CTkMessagebox(title= 'Erro!',
                 message= 'As senhas não são as mesmas! \nVerifique novamente.',
@@ -166,8 +168,7 @@ class DataBase:
                 FOREIGN KEY (Username) REFERENCES Usuarios(Username)
             );
         ''')
-        self.conn.commit() 
-        print('Tabela Filmes criada com sucesso.')
+        self.conn.commit()
         self.desconectar_db()
         
     def adicionar_filme_principal(self):

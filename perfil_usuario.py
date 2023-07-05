@@ -16,9 +16,8 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.id_genero = None
         self.opcoes_usuario()
         self.lista_recentes = self.lista_filmes_username()
-        if self.lista_recentes is not None:
-            self.lista_recentes.reverse()
-            self.ultimos_vistos()
+        self.lista_recentes.reverse()
+        self.ultimos_vistos()
         
     def validar_usuario(self):
         self.conectar_db()
@@ -26,7 +25,6 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.dados_usuario = self.cursor.fetchone()
         self.desconectar_db()
         
-    #verificação dos estados do botão e atribuição de valor a variavel self.id_genero
     def verificar_botao_acao(self):
         if self.botao_acao._check_state == True:
             self.id_genero = 28
@@ -1110,7 +1108,7 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         if self.id_genero is not None:
             genre = self.id_genero
             filmes = movie_genre(genre)
-            self.testando = filmes
+            self.filmes = filmes
             filmes_sorteados = random_movie_pag_genre()
     
             #informações do principal
@@ -1604,12 +1602,12 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
         self.label_recentes = ctk.CTkLabel(
                 self.frame_filmes_recentes,
                 text='Ultimos filmes vistos:',
-                font=('Berlin Sans FB', 18)
+                font=('Berlin Sans FB', 28)
             )   
-        self.label_recentes.place(x=5, y=20)
+        self.label_recentes.place(x=35, y=20)
         
         if self.lista_recentes is not None:
-            if len(self.lista_recentes) >= 0:
+            if len(self.lista_recentes) > 0:
                 url_recente1 = get_movie_by_id(self.lista_recentes[0])
                 self.imagem_recente1 = mostrar_imagem(url_recente1)
 
@@ -1651,7 +1649,4 @@ class JanelaUsuario(ctk.CTkToplevel, DataBase):
                         text='', 
                         image=self.abrir_imagem_recente3)
                 self.mostrar_imagem_recente3.place(x=80, y=545)
-            
-            else:
-                pass
-        
+                    
